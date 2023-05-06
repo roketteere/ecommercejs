@@ -7,7 +7,16 @@ const { Product, Category, Tag, ProductTag } = require("../../models");
 router.get("/", async (req, res) => {
   try {
     const productData = await Product.findAll({
-      include: [Tag, Category],
+      include: [
+        {
+          model: Category,
+          attributes: ["category_name"],
+        },
+        {
+          model: Tag,
+          attributes: ["tag_name"],
+        },
+      ],
     });
     res.status(200).json(productData);
   } catch (err) {
@@ -99,11 +108,12 @@ router.put("/:id", (req, res) => {
         ProductTag.bulkCreate(newProductTags),
       ]);
     })
-    .then((updatedProductTags) => res.json(updatedProductTags))
+    .then((updatedProductTags) => res.status(200).json(updatedProductTags))
     .catch((err) => {
       // console.log(err);
       res.status(400).json(err);
     });
+  res.json(req.body);
 });
 
 router.delete("/:id", async (req, res) => {
